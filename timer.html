@@ -1,139 +1,379 @@
 <!DOCTYPE html>
-    <head>
-        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
-        <style>
-            #div_timer {
-                display: flex;
-                justify-content: center;
-                flex-direction: column;
-                align-items: center;
-            }
-            #canvas_timer {
-                width: 500px;
-                height: 500px;
-                background-color: beige;
-            }
-        </style>
-        <script>
 
-            var timerMinute = 0;
-            $(document).ready(function() {
-                fillTimer(0);
-            });
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <style>
+        #div_timer {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
 
-            var fillTimer = function(minute) {
-                var canvas = document.getElementById('canvas_timer');
-                console.log(canvas.width, canvas.height);
-                var context = canvas.getContext('2d');
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                var centerX = canvas.width / 2;
-                var centerY = canvas.height / 2;
-                var radius = 170;
+        #canvas_timer {
+            width: 500px;
+            height: 500px;
+            background-color: beige;
+        }
 
+        #div_main {
+            position: absolute;
+        }
 
+        #div_main_btns {
+            position: absolute;
+            top: 15px;
+        }
 
-                /**
-                 *  arc
-                 **/
+        .btn_minute {
+            all: unset;
+            font-weight: bolder;
+            font-size: xx-large;
+        }
 
+        /* .div_btn {
+            margin-top: 25px;
+        } */
+        .div_btn button {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+        }
+
+        .div_btn_minute_plus {
+            border: 1px solid black;
+            width: 500px;
+            text-align: center;
+            background:lightblue;
+        }
+
+        .div_btn_minute_minus {
+            border: 1px solid black;
+            width: 500px;
+            text-align: center;
+            background:lightcyan;
+        }
+
+        .div_btn_timer_control {
+            border: 1px solid black;
+            width: 500px;
+            text-align: center;
+            background:aliceblue
+        }
+
+        .div_btn_minute_plus button {
+            all: unset;
+            width: 50px;
+            height: 30px;
+            background: black;
+            color: white;
+            font-weight: 900;
+            font-size: x-large;
+            border: 2px solid black;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .div_btn_minute_plus button:hover {
+            background: cadetblue;
+            border: 2px solid cadetblue;
+        }
+
+        .div_btn_minute_minus button {
+            all: unset;
+            width: 50px;
+            height: 30px;
+            background: black;
+            color: white;
+            font-weight: 900;
+            font-size: x-large;
+            border: 2px solid black;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .div_btn_minute_minus button:hover {
+            background: red;
+            border: 2px solid red;
+        }
+
+        .div_btn_timer_control button {
+            all: unset;
+            width: 100px;
+            height: 30px;
+            background: black;
+            color: white;
+            font-weight: 900;
+            font-size: x-large;
+            border: 2px solid black;
+            border-radius: 10px;
+            text-align: center;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .div_btn_timer_control button:nth-child(1) {
+            background: blue;
+            border: 2px solid blue;
+        }
+
+        .div_btn_timer_control button:nth-child(2) {
+            background: red;
+            border: 2px solid red;
+        }
+        .div_btn_timer_control button:nth-child(3) {
+            background: green;
+            border: 2px solid green;
+        }
+
+        .div_btn_timer_control button:hover {
+            border: 2px solid transparent;
+            background: transparent;
+            color: black;
+        }
+
+        #time {
+            all: unset;
+            text-align: center;
+            border: 1px solid black;
+            width: 500px;
+            height: 70px;
+            background: black;
+            font-size: 3em;
+            font-weight: 900;
+            color: yellowgreen;
+        }
+
+        .btn_disabled {
+            background: lightslategray;
+            border: 2px solid lightslategray;
+        }
+    </style>
+    <script>
+
+        var timerMinute = 0;
+        $(document).ready(function () {
+            fillTimer(0);
+        });
+
+        var fillTimer = function (minute) {
+            var canvas = document.getElementById('canvas_timer');
+            console.log(canvas.width, canvas.height);
+            var context = canvas.getContext('2d');
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            var centerX = canvas.width / 2;
+            var centerY = canvas.height / 2;
+            var radius = 170;
+
+            /**
+             *  arc
+             **/
+
+            context.beginPath();
+            context.arc(centerX, centerY, radius, 1.5 * Math.PI, convertMinToAngle(parseFloat(minute)), true);
+            context.fillStyle = 'red';
+            context.lineWidth = 1;
+            context.strokeStyle = 'red';
+            context.stroke();
+            context.closePath();
+            context.fill();
+            if (minute > 30) {
                 context.beginPath();
-                context.arc(centerX, centerY, radius, 1.5 * Math.PI, convertMinToAngle(parseFloat(minute)), true);
+
+                var min = minute - 30;
+                console.log(min);
+                context.arc(centerX, centerY, radius, 0.5 * Math.PI, convertMinToAngle2(parseFloat(min)), true);
                 context.fillStyle = 'red';
                 context.lineWidth = 1;
                 context.strokeStyle = 'red';
                 context.stroke();
-                context.closePath();
                 context.fill();
-                if (minute > 30) {
-                    context.beginPath();
-
-                    var min = minute - 30;
-                    console.log(min);
-                    context.arc(centerX, centerY, radius, 0.5 * Math.PI, convertMinToAngle2(parseFloat(min)), true);
-                    context.fillStyle = 'red';
-                    context.lineWidth = 1;
-                    context.strokeStyle = 'red';
-                    context.stroke();
-                    context.fill();
-                }
-
-
-                /**
-                 *  Triangle
-                 **/
-
-                context.fillStyle = 'red';
-                context.beginPath();
-                context.moveTo(centerX, centerY);
-
-                if (minute <= 30) {
-                    // compute x and y coordinates of the end angle relative to canvas
-                    var x = centerX + Math.cos(convertMinToAngle(parseFloat(minute))) * radius;
-                    var y = centerY + Math.sin(convertMinToAngle(parseFloat(minute))) * radius;
-                    context.lineTo(centerX, centerY - radius);
-
-                } else if (minute > 30) {
-                    var min = minute - 30;
-                    console.log(min);
-                    var x = centerX + Math.cos(convertMinToAngle2(parseFloat(min))) * radius;
-                    var y = centerY + Math.sin(convertMinToAngle2(parseFloat(min))) * radius;
-                    context.lineTo(centerX, centerY + radius);
-
-                }
-                console.log(x, y);
-                context.lineTo(x, y);
-                context.lineWidth = 1;
-                context.strokeStyle = 'red';
-                context.fill();
-                context.stroke();
-                context.closePath();
-            }
-            var convertMinToAngle = function(min) {
-                if (min < 15 ) {
-                    var angle = 1.5 - parseFloat(min) * (parseFloat(0.5) / 15);
-                    console.log(angle, angle * Math.PI);
-                    return parseFloat(angle * Math.PI);
-                } else if (min >= 15) {
-                    if (min >= 30) {
-                        min = 30;
-                    }
-                    var angle = parseFloat(15) / parseFloat(min);
-                    console.log(angle, angle * Math.PI);
-                    return parseFloat(angle * Math.PI);
-                }
             }
 
-            var convertMinToAngle2 = function(min) {
-                var angle = 0.5 - parseFloat(min) * (parseFloat(0.5) / 15);
-                    console.log(angle, angle * Math.PI);
-                    return parseFloat(angle * Math.PI);
-            }
 
-            var setTime = function(min) {
-                timerMinute += min;
-                console.log(timerMinute);
-                if (timerMinute < 0) {
-                    timerMinute = 0;
-                } else if (timerMinute >= 60) {
-                    timerMinute = 60;
+            /**
+             *  Triangle
+             **/
+
+            context.fillStyle = 'red';
+            context.beginPath();
+            context.moveTo(centerX, centerY);
+
+            if (minute <= 30) {
+                // compute x and y coordinates of the end angle relative to canvas
+                var x = centerX + Math.cos(convertMinToAngle(parseFloat(minute))) * radius;
+                var y = centerY + Math.sin(convertMinToAngle(parseFloat(minute))) * radius;
+                context.lineTo(centerX, centerY - radius);
+
+            } else if (minute > 30) {
+                var min = minute - 30;
+                console.log(min);
+                var x = centerX + Math.cos(convertMinToAngle2(parseFloat(min))) * radius;
+                var y = centerY + Math.sin(convertMinToAngle2(parseFloat(min))) * radius;
+                context.lineTo(centerX, centerY + radius);
+
+            }
+            console.log(x, y);
+            context.lineTo(x, y);
+            context.lineWidth = 1;
+            context.strokeStyle = 'red';
+            context.fill();
+            context.stroke();
+            context.closePath();
+        }
+        var convertMinToAngle = function (min) {
+            if (min <= 30) {
+                var angle = 1.5 - parseFloat(min) * (parseFloat(0.5) / 15);
+                console.log(angle, angle * Math.PI);
+                return parseFloat(angle * Math.PI);
+            } else if (min > 30) {
+                return parseFloat(0.5 * Math.PI);
+            }
+        }
+
+        var convertMinToAngle2 = function (min) {
+            var angle = 0.5 - parseFloat(min) * (parseFloat(0.5) / 15);
+            console.log(angle, angle * Math.PI);
+            return parseFloat(angle * Math.PI);
+        }
+
+        var setTime = function (min) {
+            timerMinute += min;
+            console.log(timerMinute);
+            if (timerMinute < 0) {
+                timerMinute = 0;
+            } else if (timerMinute >= 60) {
+                timerMinute = 60;
+            }
+            $('#time').val("00:" + getTimeStr(timerMinute) + ":00");
+            if (timerMinute == 60) {
+                $('#time').val("01:00:00");
+            }
+            fillTimer(timerMinute);
+        }
+
+        var drawSecondsTimer = function () {
+            var canvas = document.getElementById('canvas_timer');
+            console.log(canvas.width, canvas.height);
+            var context = canvas.getContext('2d');
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            var centerX = canvas.width / 2;
+            var centerY = canvas.height / 2;
+            var radius = 170;
+        }
+
+        var start = function () {
+            $('#start').attr('disabled', 'disabled');
+            $('#start').addClass('btn_disabled');
+            // Update the count down every 1 second
+            var minTimer = setInterval(function () {
+                if (timerMinute == 60) {
+                    $('#time').val("01:00:00");
+                } else {
+                    $('#time').val("00:" + getTimeStr(timerMinute) + ":00");
                 }
-                $('#time').val(timerMinute);
                 fillTimer(timerMinute);
+
+                timerMinute -= 1;
+                // If the count down is over, write some text
+                if (timerMinute < 0) {
+                    clearInterval(minTimer);
+                }
+            }, 1000);
+            // var secTimer = setIntervar(function() {
+            // }, 100);
+            var clear = function () {
+                clearInterval(minTimer);
             }
+        }
 
-        </script>
-    </head>
+        var pause = function () {
 
-    <body>
-        <div>
-            <div id="div_timer">
-                <div><h1>타이머</h1></div>
-                <!-- <div><img src="https://lh3.googleusercontent.com/proxy/ux4g6C-4_TPAOYkYd1BclwJhpMk2C49e69hV3SOr25Hy8B2SDskAylPnx2pbsE5-VQ_T_pcp9mt0oMsYGSwVVddp1GSOnSpKTNpCGQgwIH5KEhApW5oygsIZ_EY1kL6CBdhm0q6fEqwaqgET_rJ7-JvtKXy13A"></div> -->
-                <div><canvas id="canvas_timer" width="500" height="500"></canvas></div>
-                <div><label for="time"></label><input type="number" id="time"/></div>
-                <div><button id="plus10m" onclick="setTime(10);">+10분</button><button id="plus1min" onclick="setTime(1);">+1분</button></div>
-                <div><button id="minus10m" onclick="setTime(-10);">-10분</button><button id="minus1min" onclick="setTime(-1);">-1분</button></div>
+        }
+
+        var reset = function () {
+            timerMinute = 0;
+            $('#time').val("00:00:00");
+            fillTimer(timerMinute);
+        }
+
+        var getTimeStr = function (min) {
+            var str = "";
+            if (min < 10) {
+                str = "0" + min;
+            } else {
+                str = min + "";
+            }
+            return str;
+        }
+
+    </script>
+</head>
+
+<body>
+    <div>
+        <div id="div_timer">
+            <div>
+                <h1>TIMER</h1>
+            </div>
+            <!-- <div><img src="https://lh3.googleusercontent.com/proxy/ux4g6C-4_TPAOYkYd1BclwJhpMk2C49e69hV3SOr25Hy8B2SDskAylPnx2pbsE5-VQ_T_pcp9mt0oMsYGSwVVddp1GSOnSpKTNpCGQgwIH5KEhApW5oygsIZ_EY1kL6CBdhm0q6fEqwaqgET_rJ7-JvtKXy13A"></div> -->
+            <div style="width:500px; height:500px;">
+                <div id="div_main"><canvas id="canvas_timer" width="500" height="500"></canvas>
+                    <div id="div_main_btns" style="margin-top: 25px;">
+                        <div class="div_btn" style="margin-left: 235px">
+                            <button class="btn_minute">0</button>
+                        </div>
+                        <div class="div_btn" style="margin-left: 120px; margin-top: -5px;">
+                            <button class="btn_minute">5</button>
+                            <button class="btn_minute" style="margin-left: 200px;">55</button>
+                        </div>
+                        <div class="div_btn" style="margin-left: 50px; margin-top: 35px;">
+                            <button class="btn_minute">10</button>
+                            <button class="btn_minute" style="margin-left: 330px;">50</button>
+                        </div>
+                        <div class="div_btn" style="margin-left: 30px; margin-top: 65px;">
+                            <button class="btn_minute">15</button>
+                            <button class="btn_minute" style="margin-left: 370px;">45</button>
+                        </div>
+                        <div class="div_btn" style="margin-left: 50px; margin-top: 60px;">
+                            <button class="btn_minute">20</button>
+                            <button class="btn_minute" style="margin-left: 320px;">40</button>
+                        </div>
+                        <div class="div_btn" style="margin-left: 125px; margin-top: 35px;">
+                            <button class="btn_minute">25</button>
+                            <button class="btn_minute" style="margin-left: 180px;">35</button>
+                        </div>
+                        <div class="div_btn" style="margin-left: 235px; margin-top: -5px;">
+                            <button class="btn_minute">30</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div><label for="time"></label><input type="text" id="time" value="00:00:00" /></div>
+            <div class="div_btn_minute_plus">
+                <button id="plus15m" onclick="setTime(15);">+15</button>
+                <button id="plus10m" onclick="setTime(10);">+10</button>
+                <button id="plus5m" onclick="setTime(5);">+5</button>
+                <button id="plus1min" onclick="setTime(1);">+1</button>
+            </div>
+            <div class="div_btn_minute_minus">
+                <button id="minus15m" onclick="setTime(-15);">-15</button>
+                <button id="minus10m" onclick="setTime(-10);">-10</button>
+                <button id="minus5m" onclick="setTime(-5);">-5</button>
+                <button id="minus1min" onclick="setTime(-1);">-1</button>
+            </div>
+            <div class="div_btn_timer_control">
+                <button id="start" onclick="start();">START</button>
+                <button id="pause" onclick="pause();">PAUSE</button>
+                <button id="reset" onclick="reset();">RESET</button>
             </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
