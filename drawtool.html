@@ -1,0 +1,176 @@
+<script>
+const drawTools = {
+			clear() {
+				// 캔버스 내용 제거
+				const canvas = document.getElementById('canvas');
+				const ctx = canvas.getContext('2d');
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			},
+			stroke(coordinates, color, lineWidth) {
+				// 마우스가 이동한 경로를 따라 실선 그리기
+				if (coordinates.length > 0) {
+					const ctx = document.getElementById('canvas').getContext('2d');
+					const firstCoordinate = coordinates[0];
+					ctx.beginPath();
+					ctx.moveTo(firstCoordinate[0], firstCoordinate[1]);
+					for (let i = 1; i < coordinates.length; i += 1) {
+						ctx.lineTo(coordinates[i][0], coordinates[i][1]);
+					}
+					ctx.strokeStyle = color;
+					ctx.lineWidth = lineWidth;
+					ctx.stroke();
+					ctx.closePath();
+				}
+			},
+			eraser(coordinates, lineWidth) {
+				// 마우스가 이동한 좌표에 따라 하얀색으로 원을 그려서 지우개 기능처럼 동작
+				const canvas = document.getElementById('canvas');
+				const ctx = canvas.getContext('2d');
+				for (let i = 0; i < coordinates.length; i += 1) {
+					ctx.beginPath();
+					const coordinate = coordinates[i];
+					const [x, y] = coordinate;
+					ctx.fillStyle = 'white';
+					ctx.arc(x, y, lineWidth / 2, 0, Math.PI * 2);
+					ctx.fill();
+					ctx.closePath();
+				}
+			},
+			execute(array) {
+				// rects 배열에 저장 된 도형을 기준으로 다시 캔버스에 그림
+				for (let i = 0; i < array.length; i += 1) {
+					const obj = array[i];
+					if (obj.type === 'point') this.point(obj.startX, obj.startY);
+					if (obj.type === 'square') {
+						this.square(obj);
+					}
+					
+				}
+			},
+			square(obj) {
+				//if (coordinates != '') {
+					// 사각 도형을 그림
+					const canvas = document.getElementById('canvas');
+					const ctx = canvas.getContext('2d');
+					//const [endX, endY] = [end[0] - startX, end[1] - startY];
+					
+					const startX = obj.startX;
+					const startY = obj.startY;
+					const width = obj.endX - startX;
+					const height = obj.endY - startY;
+					ctx.beginPath();
+					//console.log('mouseX', mouseX);
+
+					// if ((mouseX - offsetX) > startX && (mouseX - offsetX) < startX + endX && (mouseY - offsetY) > startY && (mouseY - offsetY) < startY + endY) {
+					// 	// drawTools.clear();
+					// 	color = 'red';
+					// 	// flag = true;
+					// 	//console.log('test', 'inside');
+					// 	//break;
+					// } else {
+					// 	color = 'rgba(255, 255, 0, .3)';
+					// }
+
+				
+					ctx.beginPath();
+					ctx.fillStyle = obj.color;
+					ctx.font = "20px Georgia";
+					ctx.fillText(obj.label, startX, startY - 10);
+					ctx.closePath();
+					//ctx.stokeStyle = obj.color;
+					ctx.strokeRect(startX, startY, width, height);
+					ctx.beginPath();
+					ctx.fillStyle = obj.color + '1f';
+					
+					ctx.fillRect(startX, startY, width, height);//수정
+					ctx.closePath();
+					//for (let i = 1; i > 0; i -= 1) {
+					//console.log(startX - i);
+					ctx.beginPath();
+					ctx.fillStyle = obj.color;
+
+					ctx.arc(startX, startY, 6, 0, Math.PI * 2);//수정
+					ctx.arc(startX + width, startY + height, 6, 0, Math.PI * 2);//수정
+					//ctx.arc(startX + endX, startY, 6, 6, Math.PI * 2);
+					//ctx.arc(startX, startY + endY, 6, 6, Math.PI * 2);
+					ctx.fill();
+					ctx.closePath();
+					ctx.beginPath();
+					ctx.fillStyle = obj.color;
+					ctx.arc(startX+width, startY, 6, 0, Math.PI * 2);//수정
+					ctx.arc(startX, startY + height, 6, 0, Math.PI * 2);//수정
+					ctx.fill();
+					ctx.closePath();
+					
+				//}
+					
+
+					
+
+					//ctx.closePath();
+					$('#startX').val(startX + 'px');
+					$('#startY').val(startY + 'px');
+					$('#endX').val(startX + width + 'px');
+					$('#endY').val(startY + height + 'px');
+
+
+
+					//for(var i=0;i<rects.length;i++){
+					//var r = rects[i];
+					//console.log('test', r);
+					//console.log('test', mouseX);
+					//console.log('test', mouseY);
+					// if(mouseX>startX&&mouseX<startX+endX&&mouseY>startY&&mouseY<startY+endY){
+					// 	// drawTools.clear();
+					// 	drawTools.square(r.coordinates, 'red');
+					// 	// flag = true;
+					// 	//console.log('test', 'inside');
+					// 	//break;
+					// }else {
+					// 		drawTools.square(r.coordinates, 'rgba(255, 255, 0, .3)');
+					// 	}
+					//}
+					// if (flag) {
+					// 	for(var i=0;i<rects.length;i++){
+					// 		if(mouseX>r.coordinates[0][0]&&mouseX<r.coordinates[0][0]+r.coordinates[r.coordinates.length - 1][0]&&mouseY>r.coordinates[0][1]&&mouseY<r.coordinates[0][1]+r.coordinates[r.coordinates.length - 1][1]){
+					// 			drawTools.square(r.coordinates, 'red');
+					// 		} else {
+					// 			drawTools.square(r.coordinates, 'rgba(255, 255, 0, .3)');
+					// 		}
+
+					// 	}
+					// 	flag = false;
+					// }
+
+				//}
+
+
+			},
+			point(x, y) {
+				// 마우스가 이동한 좌표에 따라 원을 그림
+				const canvas = document.getElementById('canvas');
+				const ctx = canvas.getContext('2d');
+				ctx.beginPath();
+				ctx.fillStyle = 'red';
+				ctx.arc(x, y, 5 / 2, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.closePath();
+			},
+			//수정 start
+			moving(rects) {
+				//박스 드래그 기능 추가
+				var canvas = document.getElementById("canvas");
+				var ctx = canvas.getContext("2d");
+				for (var i = 0; i < rects.length; i++) {
+					var rect = rects[i];
+					ctx.beginPath();
+					ctx.strokeStyle = rect.color;
+					ctx.strokeRect(rect.startX, rect.startY, rect.width, rect.height);
+					ctx.fillStyle = rect.color + '1f';
+					ctx.fillRect(rect.startX, rect.startY, rect.width, rect.height);
+					ctx.closePath();
+				}
+			}//수정 end
+
+		};
+</script>

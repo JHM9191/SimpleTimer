@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+        <style>
+            #div_timer {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+            }
+            #canvas_timer {
+                width: 500px;
+                height: 500px;
+                background-color: beige;
+            }
+        </style>
+        <script>
+
+            var timerMinute = 0;
+            $(document).ready(function() {
+                fillTimer(0);
+            });
+
+            var fillTimer = function(minute) {
+                var canvas = document.getElementById('canvas_timer');
+                console.log(canvas.width, canvas.height);
+                var context = canvas.getContext('2d');
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                var centerX = canvas.width / 2;
+                var centerY = canvas.height / 2;
+                var radius = 170;
+
+
+
+                /**
+                 *  arc
+                 **/
+
+                context.beginPath();
+                context.arc(centerX, centerY, radius, 1.5 * Math.PI, convertMinToAngle(parseFloat(minute)), true);
+                context.fillStyle = 'red';
+                context.lineWidth = 1;
+                context.strokeStyle = 'red';
+                context.stroke();
+                context.closePath();
+                context.fill();
+                if (minute > 30) {
+                    context.beginPath();
+
+                    var min = minute - 30;
+                    console.log(min);
+                    context.arc(centerX, centerY, radius, 0.5 * Math.PI, convertMinToAngle2(parseFloat(min)), true);
+                    context.fillStyle = 'red';
+                    context.lineWidth = 1;
+                    context.strokeStyle = 'red';
+                    context.stroke();
+                    context.fill();
+                }
+
+
+                /**
+                 *  Triangle
+                 **/
+
+                context.fillStyle = 'red';
+                context.beginPath();
+                context.moveTo(centerX, centerY);
+
+                if (minute <= 30) {
+                    // compute x and y coordinates of the end angle relative to canvas
+                    var x = centerX + Math.cos(convertMinToAngle(parseFloat(minute))) * radius;
+                    var y = centerY + Math.sin(convertMinToAngle(parseFloat(minute))) * radius;
+                    context.lineTo(centerX, centerY - radius);
+
+                } else if (minute > 30) {
+                    var min = minute - 30;
+                    console.log(min);
+                    var x = centerX + Math.cos(convertMinToAngle2(parseFloat(min))) * radius;
+                    var y = centerY + Math.sin(convertMinToAngle2(parseFloat(min))) * radius;
+                    context.lineTo(centerX, centerY + radius);
+
+                }
+                console.log(x, y);
+                context.lineTo(x, y);
+                context.lineWidth = 1;
+                context.strokeStyle = 'red';
+                context.fill();
+                context.stroke();
+                context.closePath();
+            }
+            var convertMinToAngle = function(min) {
+                if (min < 15 ) {
+                    var angle = 1.5 - parseFloat(min) * (parseFloat(0.5) / 15);
+                    console.log(angle, angle * Math.PI);
+                    return parseFloat(angle * Math.PI);
+                } else if (min >= 15) {
+                    if (min >= 30) {
+                        min = 30;
+                    }
+                    var angle = parseFloat(15) / parseFloat(min);
+                    console.log(angle, angle * Math.PI);
+                    return parseFloat(angle * Math.PI);
+                }
+            }
+
+            var convertMinToAngle2 = function(min) {
+                var angle = 0.5 - parseFloat(min) * (parseFloat(0.5) / 15);
+                    console.log(angle, angle * Math.PI);
+                    return parseFloat(angle * Math.PI);
+            }
+
+            var setTime = function(min) {
+                timerMinute += min;
+                console.log(timerMinute);
+                if (timerMinute < 0) {
+                    timerMinute = 0;
+                } else if (timerMinute >= 60) {
+                    timerMinute = 60;
+                }
+                $('#time').val(timerMinute);
+                fillTimer(timerMinute);
+            }
+
+        </script>
+    </head>
+
+    <body>
+        <div>
+            <div id="div_timer">
+                <div><h1>타이머</h1></div>
+                <!-- <div><img src="https://lh3.googleusercontent.com/proxy/ux4g6C-4_TPAOYkYd1BclwJhpMk2C49e69hV3SOr25Hy8B2SDskAylPnx2pbsE5-VQ_T_pcp9mt0oMsYGSwVVddp1GSOnSpKTNpCGQgwIH5KEhApW5oygsIZ_EY1kL6CBdhm0q6fEqwaqgET_rJ7-JvtKXy13A"></div> -->
+                <div><canvas id="canvas_timer" width="500" height="500"></canvas></div>
+                <div><label for="time"></label><input type="number" id="time"/></div>
+                <div><button id="plus10m" onclick="setTime(10);">+10분</button><button id="plus1min" onclick="setTime(1);">+1분</button></div>
+                <div><button id="minus10m" onclick="setTime(-10);">-10분</button><button id="minus1min" onclick="setTime(-1);">-1분</button></div>
+            </div>
+        </div>
+    </body>
+</html>
