@@ -14,7 +14,7 @@
         #canvas_timer {
             width: 500px;
             height: 500px;
-            background-color: beige;
+            /* background-color: beige; */
         }
 
         #div_main {
@@ -30,6 +30,11 @@
             all: unset;
             font-weight: bolder;
             font-size: xx-large;
+            cursor: pointer;
+        }
+
+        .btn_minute:hover {
+            color:cadetblue;
         }
 
         /* .div_btn {
@@ -56,10 +61,10 @@
         }
 
         .div_btn_timer_control {
-            border: 1px solid black;
+            /* border: 1px solid black; */
             width: 500px;
             text-align: center;
-            background:aliceblue
+            /* background:aliceblue */
         }
 
         .div_btn_minute_plus button {
@@ -117,7 +122,7 @@
             cursor: pointer;
         }
 
-        .div_btn_timer_control button:nth-child(1) {
+        /* .div_btn_timer_control button:nth-child(1) {
             background: blue;
             border: 2px solid blue;
         }
@@ -129,24 +134,23 @@
         .div_btn_timer_control button:nth-child(3) {
             background: green;
             border: 2px solid green;
-        }
+        } */
 
-        .div_btn_timer_control button:hover {
+        /* .div_btn_timer_control button:hover {
             border: 2px solid transparent;
             background: transparent;
             color: black;
-        }
+        } */
 
         #time {
             all: unset;
-            text-align: center;
-            border: 1px solid black;
-            width: 500px;
+            text-align: left;
+            /* width: 500px; */
             height: 70px;
-            background: black;
-            font-size: 3em;
+            font-family:'Courier New', Courier, monospace;
+            font-size: 2em;
             font-weight: 900;
-            color: yellowgreen;
+            color: rgba(0, 0, 0, 0.612);
         }
 
 
@@ -159,11 +163,53 @@
             background: lightslategray;
             border: 2px solid lightslategray;
         } */
+
+        #div_time_reset {
+            display: flex;
+            justify-content: center;
+            height: 200px;
+            align-items: center;
+            
+        }
+
+        #start {
+            background-color: red;
+            background: url('img/start.png');
+            background-repeat: no-repeat;
+            background-size: 40px;
+            background-position: center;
+            border-radius: 35px;
+            height: 70px;
+            width: 70px;
+        }
+        #pause {
+            background-color: red;
+            background: url('img/pause.png');
+            background-repeat: no-repeat;
+            background-size: 40px;
+            background-position: center;
+            border-radius: 35px;
+            height: 70px;
+            width: 70px;
+        }
+
+        #reset {
+            background-color: red;
+            background: url('img/reset.png');
+            background-repeat: no-repeat;
+            background-size: 40px;
+            background-position: center;
+            border: none;
+            border-radius: 35px;
+            height: 70px;
+            width: 70px;
+        }
     </style>
     <script>
 
         var timerMinute = 0;
         $(document).ready(function () {
+            $('#pause').hide();
             fillTimer(0);
         });
 
@@ -264,6 +310,26 @@
             fillTimer(timerMinute);
         }
 
+        var isZero = true;
+        var setMinute = function (min) {
+            timerMinute = min;
+            console.log(timerMinute);
+            if (min == 0) {
+                if (isZero) {
+                    timerMinute = 0;
+                    isZero = false;
+                } else {
+                    timerMinute = 60;
+                    isZero = true;
+                }
+            }
+            $('#time').val("00:" + getTimeStr(timerMinute) + ":00");
+            if (timerMinute == 60) {
+                $('#time').val("01:00:00");
+            }
+            fillTimer(timerMinute);
+        }
+
         var drawSecondsTimer = function () {
             var canvas = document.getElementById('canvas_timer');
             console.log(canvas.width, canvas.height);
@@ -277,12 +343,15 @@
         var isPaused = false;
         var isReset = false;
         var start = function () {
+            $('#start').hide();
+            $('#pause').show();
+
             isPaused = false;
-            isReset = false;
-            $('#start').attr('disabled', 'disabled');
-            $('#start').removeClass('div_btn_timer_control');
-            $('#start').addClass('btn_disabled');
-            var h;
+            // $('#start').attr('disabled', 'disabled');
+            // $('#start').removeClass('div_btn_timer_control');
+            // $('#start').addClass('btn_disabled');
+           
+                var h;
             var m = 60;
             var s = 60;
             // Update the count down every 1 second
@@ -322,6 +391,7 @@
                     clear();
                 }
             }, 1000);
+            
             var clear = function () {
                 console.log("clear");
                 $('#start').removeAttr('disabled');
@@ -333,16 +403,30 @@
         var pause = function () {
             if (!isPaused) {
                 isPaused = true;
-                $('#pause').text('PLAY');
+                $('#pause').css({
+                    'background': 'url("img/start.png")',
+                    'background-repeat': 'no-repeat',
+                    'background-size': '40px',
+                    'background-position': 'center'
+                });
+                // $('#pause').text('PLAY');
             } else {
                 isPaused = false;
-                $('#pause').text('PAUSE');
+                $('#pause').css({
+                    'background': 'url("img/pause.png")',
+                    'background-repeat': 'no-repeat',
+                    'background-size': '40px',
+                    'background-position': 'center'
+                });
+                // $('#pause').text('PAUSE');
             }
         }
 
         var reset = function () {
             isReset = true;
             isPaused = true;
+            $('#start').show();
+            $('#pause').hide();
             timerMinute = 0;
             $('#time').val("00:00:00");
             fillTimer(timerMinute);
@@ -372,36 +456,39 @@
                 <div id="div_main"><canvas id="canvas_timer" width="500" height="500"></canvas>
                     <div id="div_main_btns" style="margin-top: 25px;">
                         <div class="div_btn" style="margin-left: 235px">
-                            <button class="btn_minute">0</button>
+                            <button id="btn_min_0" class="btn_minute" onclick="setMinute(0);">0</button>
                         </div>
                         <div class="div_btn" style="margin-left: 120px; margin-top: -5px;">
-                            <button class="btn_minute">5</button>
-                            <button class="btn_minute" style="margin-left: 200px;">55</button>
+                            <button id="btn_min_5" class="btn_minute" onclick="setMinute(5);">5</button>
+                            <button id="btn_min_55" class="btn_minute" style="margin-left: 200px;" onclick="setMinute(55);">55</button>
                         </div>
                         <div class="div_btn" style="margin-left: 50px; margin-top: 35px;">
-                            <button class="btn_minute">10</button>
-                            <button class="btn_minute" style="margin-left: 330px;">50</button>
+                            <button id="btn_min_10" class="btn_minute" onclick="setMinute(10);">10</button>
+                            <button id="btn_min_50" class="btn_minute" style="margin-left: 330px;" onclick="setMinute(50);">50</button>
                         </div>
                         <div class="div_btn" style="margin-left: 30px; margin-top: 65px;">
-                            <button class="btn_minute">15</button>
-                            <button class="btn_minute" style="margin-left: 370px;">45</button>
+                            <button id="btn_min_15" class="btn_minute" onclick="setMinute(15);">15</button>
+                            <button id="btn_min_45" class="btn_minute" style="margin-left: 370px;" onclick="setMinute(45);">45</button>
                         </div>
                         <div class="div_btn" style="margin-left: 50px; margin-top: 60px;">
-                            <button class="btn_minute">20</button>
-                            <button class="btn_minute" style="margin-left: 320px;">40</button>
+                            <button id="btn_min_20" class="btn_minute" onclick="setMinute(20);">20</button>
+                            <button id="btn_min_40" class="btn_minute" style="margin-left: 320px;" onclick="setMinute(40);">40</button>
                         </div>
                         <div class="div_btn" style="margin-left: 125px; margin-top: 35px;">
-                            <button class="btn_minute">25</button>
-                            <button class="btn_minute" style="margin-left: 180px;">35</button>
+                            <button id="btn_min_25" class="btn_minute" onclick="setMinute(25);">25</button>
+                            <button id="btn_min_35" class="btn_minute" style="margin-left: 180px;" onclick="setMinute(35);">35</button>
                         </div>
                         <div class="div_btn" style="margin-left: 235px; margin-top: -5px;">
-                            <button class="btn_minute">30</button>
+                            <button id="btn_min_30" class="btn_minute" onclick="setMinute(30);">30</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div><label for="time"></label><input type="text" id="time" value="00:00:00" /></div>
-            <div class="div_btn_minute_plus">
+            <div>
+                <div id="div_time_reset">
+                    <label for="time"></label><input type="text" id="time" value="00:00:00" /><button id="reset" onclick="reset();"></button>
+                </div></div>
+            <!-- <div class="div_btn_minute_plus">
                 <button id="plus15m" onclick="setTime(15);">+15</button>
                 <button id="plus10m" onclick="setTime(10);">+10</button>
                 <button id="plus5m" onclick="setTime(5);">+5</button>
@@ -412,11 +499,11 @@
                 <button id="minus10m" onclick="setTime(-10);">-10</button>
                 <button id="minus5m" onclick="setTime(-5);">-5</button>
                 <button id="minus1min" onclick="setTime(-1);">-1</button>
-            </div>
+            </div> -->
             <div class="div_btn_timer_control">
-                <button id="start" onclick="start();">START</button>
-                <button id="pause" onclick="pause();">PAUSE</button>
-                <button id="reset" onclick="reset();">RESET</button>
+                <button id="start" onclick="start();"></button>
+                <button id="pause" onclick="pause();"></button>
+                <!-- <button id="reset" onclick="reset();">RESET</button> -->
             </div>
         </div>
     </div>
