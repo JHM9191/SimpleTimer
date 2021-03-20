@@ -4,6 +4,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
         integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
     <style>
+        #div_title {
+            display: flex;
+            align-items: center;
+            height: 150px;
+        }
+
         #div_timer {
             display: flex;
             justify-content: center;
@@ -142,7 +148,7 @@
             color: black;
         } */
 
-        #time {
+        .time {
             all: unset;
             text-align: left;
             /* width: 500px; */
@@ -152,7 +158,6 @@
             font-weight: 900;
             color: rgba(0, 0, 0, 0.612);
         }
-
 
         .div_btn_timer_control button:nth-child(1):disabled {
             background: lightslategray;
@@ -166,10 +171,10 @@
 
         #div_time_reset {
             display: flex;
+            flex-direction: row;
             justify-content: center;
             height: 200px;
             align-items: center;
-            
         }
 
         #start {
@@ -203,6 +208,11 @@
             border-radius: 35px;
             height: 70px;
             width: 70px;
+            cursor: pointer;
+        }
+
+        #divider {
+            color: #EAEAEAEA;
         }
     </style>
     <script>
@@ -211,6 +221,27 @@
         $(document).ready(function () {
             $('#pause').hide();
             fillTimer(0);
+            $('.btn_minute_0').hover(function(e) {
+                $('.btn_minute_0').css('color', 'cadetblue');
+                // $('#divider').css('color', '#EAEAEAEA');
+                $('.btn_minute_60').css('color', '#EAEAEAEA');
+
+            }, function(e) {
+                $('.btn_minute_0').css('color', 'black');
+                // $('#divider').css('color', 'black');
+                $('.btn_minute_60').css('color', 'black');
+            });
+
+            $('.btn_minute_60').hover(function(e) {
+                $('.btn_minute_60').css('color', 'cadetblue');
+                // $('#divider').css('color', '#EAEAEAEA');
+                $('.btn_minute_0').css('color', '#EAEAEAEA');
+
+            }, function(e) {
+                $('.btn_minute_60').css('color', 'black');
+                // $('#divider').css('color', 'black');
+                $('.btn_minute_0').css('color', 'black');
+            });
         });
 
         var fillTimer = function (minute) {
@@ -303,29 +334,35 @@
             } else if (timerMinute >= 60) {
                 timerMinute = 60;
             }
-            $('#time').val("00:" + getTimeStr(timerMinute) + ":00");
+
+
             if (timerMinute == 60) {
-                $('#time').val("01:00:00");
+                $('#time_txt_hr').text("01");
+            } else {
+                $('#time_txt_min').text(getTimeStr(timerMinute));
             }
             fillTimer(timerMinute);
         }
 
-        var isZero = true;
+        // var isZero = true;
         var setMinute = function (min) {
             timerMinute = min;
             console.log(timerMinute);
-            if (min == 0) {
-                if (isZero) {
-                    timerMinute = 0;
-                    isZero = false;
-                } else {
-                    timerMinute = 60;
-                    isZero = true;
-                }
-            }
-            $('#time').val("00:" + getTimeStr(timerMinute) + ":00");
+            // if (min == 0) {
+            //     if (isZero) {
+            //         timerMinute = 0;
+            //         isZero = false;
+            //     } else {
+            //         timerMinute = 60;
+            //         isZero = true;
+            //     }
+            // }
             if (timerMinute == 60) {
-                $('#time').val("01:00:00");
+                $('#time_txt_hr').text("01");
+                $('#time_txt_min').text("00");
+            } else {
+                $('#time_txt_hr').text("00");
+                $('#time_txt_min').text(getTimeStr(timerMinute));
             }
             fillTimer(timerMinute);
         }
@@ -342,23 +379,25 @@
 
         var isPaused = false;
         var isReset = false;
+        var h;
+        var m,s = 0;
         var start = function () {
             $('#start').hide();
             $('#pause').show();
 
             isPaused = false;
+            isReset = false;
             // $('#start').attr('disabled', 'disabled');
             // $('#start').removeClass('div_btn_timer_control');
             // $('#start').addClass('btn_disabled');
-           
-                var h;
-            var m = 60;
-            var s = 60;
+
             // Update the count down every 1 second
             var minTimer = setInterval(function () {
                 if (!isPaused) {
                     if (timerMinute == 60) {
                         h = "00";
+                        m = 60;
+                        s = 60;
                     } else {
                         h = "00";
                         m = timerMinute;
@@ -366,12 +405,14 @@
                     if (s == 60) {
                         timerMinute -= 1;
                         m -= 1;
-                        s = 59;
+                        s -= 1;
                     }
                     if (m < 0) {
                         m = 0;
                     }
-                    $('#time').val(h + ":" + getTimeStr(m) + ":" + getTimeStr(s));
+                    $('#time_txt_hr').text(h);
+                    $('#time_txt_min').text(getTimeStr(m));
+                    $('#time_txt_sec').text(getTimeStr(s));
                     s -= 1;
                     if (s == -1) {
                         fillTimer(timerMinute);
@@ -391,7 +432,7 @@
                     clear();
                 }
             }, 1000);
-            
+
             var clear = function () {
                 console.log("clear");
                 $('#start').removeAttr('disabled');
@@ -401,7 +442,9 @@
         }
 
         var pause = function () {
+            console.log('pause');
             if (!isPaused) {
+                console.log('if');
                 isPaused = true;
                 $('#pause').css({
                     'background': 'url("img/start.png")',
@@ -411,6 +454,8 @@
                 });
                 // $('#pause').text('PLAY');
             } else {
+                console.log('else');
+
                 isPaused = false;
                 $('#pause').css({
                     'background': 'url("img/pause.png")',
@@ -425,10 +470,13 @@
         var reset = function () {
             isReset = true;
             isPaused = true;
+            m, s = 0;
             $('#start').show();
             $('#pause').hide();
             timerMinute = 0;
-            $('#time').val("00:00:00");
+            $('#time_txt_hr').text("00");
+            $('#time_txt_min').text("00");
+            $('#time_txt_sec').text("00");
             fillTimer(timerMinute);
         }
 
@@ -448,15 +496,23 @@
 <body>
     <div>
         <div id="div_timer">
-            <div>
-                <h1>TIMER</h1>
+            <div id="div_title">
+                <div>
+                    <h1>TIMER</h1>
+                </div>
             </div>
             <!-- <div><img src="https://lh3.googleusercontent.com/proxy/ux4g6C-4_TPAOYkYd1BclwJhpMk2C49e69hV3SOr25Hy8B2SDskAylPnx2pbsE5-VQ_T_pcp9mt0oMsYGSwVVddp1GSOnSpKTNpCGQgwIH5KEhApW5oygsIZ_EY1kL6CBdhm0q6fEqwaqgET_rJ7-JvtKXy13A"></div> -->
             <div style="width:500px; height:500px;">
                 <div id="div_main"><canvas id="canvas_timer" width="500" height="500"></canvas>
                     <div id="div_main_btns" style="margin-top: 25px;">
+                        <!-- <div class="div_btn" style="margin-left: 230px">
+                            <button id="btn_min_0" class="btn_minute" onclick="setMinute(60);">60</button>
+                        </div>
                         <div class="div_btn" style="margin-left: 235px">
-                            <button id="btn_min_0" class="btn_minute" onclick="setMinute(0);">0</button>
+                            <button id="btn_min_0" class="btn_minute" onclick="setMinute(0);" style="color:gray;">0</button>
+                        </div> -->
+                        <div class="div_btn" style="margin-left: 215px">
+                            <button id="btn_min_0" class="btn_minute"><span class="btn_minute_0" onclick="setMinute(0);">0</span><span id="divider">/</span><span class="btn_minute_60" onclick="setMinute(60);">60</span></button>
                         </div>
                         <div class="div_btn" style="margin-left: 120px; margin-top: -5px;">
                             <button id="btn_min_5" class="btn_minute" onclick="setMinute(5);">5</button>
@@ -486,7 +542,15 @@
             </div>
             <div>
                 <div id="div_time_reset">
-                    <label for="time"></label><input type="text" id="time" value="00:00:00" /><button id="reset" onclick="reset();"></button>
+                    <!-- <input type="text" id="time" value="00:00:00" /> -->
+                    <div>
+                        <span id="time_txt_hr" class="time">00</span><span class="time">:</span>
+                        <span id="time_txt_min" class="time">00</span><span class="time">:</span>
+                        <span id="time_txt_sec" class="time">00</span>
+                    </div>
+                    <div>
+                        <button id="reset" onclick="reset();"></button>
+                    </div>
                 </div></div>
             <!-- <div class="div_btn_minute_plus">
                 <button id="plus15m" onclick="setTime(15);">+15</button>
