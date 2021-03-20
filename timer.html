@@ -149,10 +149,16 @@
             color: yellowgreen;
         }
 
-        .btn_disabled {
+
+        .div_btn_timer_control button:nth-child(1):disabled {
             background: lightslategray;
             border: 2px solid lightslategray;
+            cursor: default;
         }
+        /* .btn_disabled {
+            background: lightslategray;
+            border: 2px solid lightslategray;
+        } */
     </style>
     <script>
 
@@ -162,8 +168,9 @@
         });
 
         var fillTimer = function (minute) {
+            console.log(minute);
             var canvas = document.getElementById('canvas_timer');
-            console.log(canvas.width, canvas.height);
+            // console.log(canvas.width, canvas.height);
             var context = canvas.getContext('2d');
             context.clearRect(0, 0, canvas.width, canvas.height);
             var centerX = canvas.width / 2;
@@ -218,7 +225,7 @@
                 context.lineTo(centerX, centerY + radius);
 
             }
-            console.log(x, y);
+            // console.log(x, y);
             context.lineTo(x, y);
             context.lineWidth = 1;
             context.strokeStyle = 'red';
@@ -229,7 +236,7 @@
         var convertMinToAngle = function (min) {
             if (min <= 30) {
                 var angle = 1.5 - parseFloat(min) * (parseFloat(0.5) / 15);
-                console.log(angle, angle * Math.PI);
+                // console.log(angle, angle * Math.PI);
                 return parseFloat(angle * Math.PI);
             } else if (min > 30) {
                 return parseFloat(0.5 * Math.PI);
@@ -267,36 +274,75 @@
             var radius = 170;
         }
 
+        var isPaused = false;
+        var isReset = false;
         var start = function () {
+            isPaused = false;
+            isReset = false;
             $('#start').attr('disabled', 'disabled');
+            $('#start').removeClass('div_btn_timer_control');
             $('#start').addClass('btn_disabled');
+            var h;
+            var m = 60;
+            var s = 60;
             // Update the count down every 1 second
             var minTimer = setInterval(function () {
-                if (timerMinute == 60) {
-                    $('#time').val("01:00:00");
-                } else {
-                    $('#time').val("00:" + getTimeStr(timerMinute) + ":00");
-                }
-                fillTimer(timerMinute);
-
-                timerMinute -= 1;
-                // If the count down is over, write some text
-                if (timerMinute < 0) {
-                    clearInterval(minTimer);
+                if (!isPaused) {
+                    if (timerMinute == 60) {
+                        h = "00";
+                    } else {
+                        h = "00";
+                        m = timerMinute;
+                    }
+                    if (s == 60) {
+                        timerMinute -= 1;
+                        m -= 1;
+                        s = 59;
+                    }
+                    if (m < 0) {
+                        m = 0;
+                    }
+                    $('#time').val(h + ":" + getTimeStr(m) + ":" + getTimeStr(s));
+                    s -= 1;
+                    if (s == -1) {
+                        fillTimer(timerMinute);
+                        if (m == 0) {
+                            s = 0;
+                            clear();
+                        } else {
+                            s = 60;
+                        }
+                    }
+                    // If the count down is over, write some text
+                    if (timerMinute < 0) {
+                        timerMinute = 0;
+                        clear();
+                    }
+                } else if (isReset) {
+                    clear();
                 }
             }, 1000);
-            // var secTimer = setIntervar(function() {
-            // }, 100);
             var clear = function () {
+                console.log("clear");
+                $('#start').removeAttr('disabled');
+                $('#start').removeClass('btn_disabled');
                 clearInterval(minTimer);
             }
         }
 
         var pause = function () {
-
+            if (!isPaused) {
+                isPaused = true;
+                $('#pause').text('PLAY');
+            } else {
+                isPaused = false;
+                $('#pause').text('PAUSE');
+            }
         }
 
         var reset = function () {
+            isReset = true;
+            isPaused = true;
             timerMinute = 0;
             $('#time').val("00:00:00");
             fillTimer(timerMinute);
